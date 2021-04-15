@@ -1,2 +1,2 @@
 # kkb-front-end
-开课吧前端学习
+开课吧web全栈学习
