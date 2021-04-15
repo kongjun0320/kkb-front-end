@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>防抖/截流</title>
+    <style>
+      body {
+        height: 1300px;
+      }
+    </style>
+  </head>
+  <body>
+    <input type="text" id="input" />
+  </body>
+  <script src="https://cdn.bootcdn.net/ajax/libs/lodash.js/4.17.21/lodash.js"></script>
+  <script>
+    // debounce
+    document
+      .querySelector('#input')
+      .addEventListener('input', debounce(handleWindowResize, 500))
+    // document.querySelector('#input').addEventListener('input', function(){console.log(this)})
+
+    function handleWindowResize(e) {
+      console.log('===', this)
+    }
+
+    function debounce(func, wait = 500) {
+      let timerId
+      function deboucned(...args) {
+        const slef = this
+
+        if (timerId) {
+          clearTimeout(timerId)
+          timerId = null
+        }
+        timerId = setTimeout(() => {
+          func.call(slef, ...args)
+          // func(args)
+        }, wait)
+      }
+      return deboucned
+    }
+    // throttle
+    window.addEventListener('scroll', _.throttle(handleWindowScroll, 1000))
+
+    function handleWindowScroll() {
+      console.log('===', this)
+    }
+
+    function throttle(func, wait = 1000) {
+      let lastTime, timerId
+      function throttled(...args) {
+        const slef = this
+
+        let currentTime = Date.now()
+
+        if (currentTime - lastTime > wait) {
+          func.call(slef, ...args)
+          lastTime = currentTime
+        } else {
+          if (timerId) {
+            clearTimeout(timerId)
+            timerId = null
+          }
+          timerId = setTimeout(() => {
+            func.call(slef, ...args)
+          }, wait)
+        }
+
+      }
+      return throttled
+    }
+  </script>
+</html>
