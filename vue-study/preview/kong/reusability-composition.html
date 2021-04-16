@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>可复用性/组合</title>
+  </head>
+  <body>
+    <div id="app">
+      <input type="text" v-focus />
+      <heading level="2">hello</heading>
+      <heading>baby</heading>
+    </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    // heading 
+    Vue.component('Heading', {
+      props: {
+        level: {
+          type: String,
+          default: '1'
+        },
+      },
+      render(h) {
+        return h('h'+this.level, this.$slots.default)
+      }
+    })
+    // 自定义指令
+    Vue.directive('focus', {
+      inserted(el) {
+        el.focus()
+      }
+    })
+    const app = new Vue({
+      el: '#app'
+    })
+
+    // 定义一个混入对象
+    // const myMixin = {
+    //   data() {
+    //     return {
+    //       msg: 'mixin msg',
+    //       foo: 'foo'
+    //     }
+    //   },
+    //   created() {
+    //     this.hello()
+    //   },
+    //   methods: {
+    //     hello() {
+    //       console.log('hello from mixin')
+    //     }
+    //   }
+    // }
+    // 定义一个使用混入对象的组件
+    // const Component = Vue.extend({
+    //   mixins: [myMixin],
+    //   data() {
+    //     return {
+    //       msg: 'component msg'
+    //     }
+    //   },
+    //   created() {
+    //     this.hello()
+    //     // console.log(
+    //     //   'foo: ',
+    //     //   this.foo,
+    //     //   ', msg: ',
+    //     //   this.msg
+    //     // )
+    //   },
+    //   methods: {
+    //     hello() {
+    //       console.log('hello from component')
+    //     }
+    //   },
+    // })
+    // 创建组件实例
+    // const component = new Component()
+  </script>
+</html>
