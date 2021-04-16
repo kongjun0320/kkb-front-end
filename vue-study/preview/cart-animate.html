@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>购物车</title>
+    <style>
+      div.active {
+        color: aqua;
+      }
+      .message-box {
+        height: 40px;
+        line-height: 40px;
+        color: #fff;
+        background-color: darkturquoise;
+      }
+      .close {
+        cursor: pointer;
+        color: #000;
+        float: right;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- <message :show="isShow" @close="closeMessageBox($event)">
+        操作成功
+      </message> -->
+      <message :show.sync="isShow">
+        <template v-slot:title="slotProp"> {{ slotProp.title }} </template>
+        操作成功
+      </message>
+
+      <h1>购物车</h1>
+      <div>
+        <input type="text" v-model.number="price" />
+        <button @click="_batchPrice">batchPrice</button>
+      </div>
+      <div><button @click="_batchAllMessage">批量清空弹窗</button></div>
+      <add-course v-model="course" @add-course="addCourse"></add-course>
+      <course-list :courses="courses"></course-list>
+      <p>课程总数：{{ total }}</p>
+    </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    function getCourses() {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve([{ name: 'web全栈' }, { name: 'web高级' }])
+        }, 2000)
+      })
+    }
+    Vue.prototype.$bus = new Vue()
+    // 弹窗组件
+    Vue.component('message', {
+      props: {
+        show: {
+          type: Boolean,
+          default: false
+        }
+      },
+      template: `
+        <div class="message-box" v-if="show">
+          <slot name="title" title="内部的标题"></slot>
+          <slot></slot>
+          <span class="close" @click="$emit('update:show', false)">X</span>
+        </div>
+      `,
+      mounted() {
+        this.$bus.$on('close-all-message', () => {
+          this.$emit('update:show', false)
+        })
+      }
+    })
+    // 添加课程组件
+    Vue.component('add-course', {
+      props: {
+        value: {
+          type: String,
+          default: ''
+        }
+      },
+      template: `
+        <div>
+          <input :value="value" @input="_onInput" type="text" @keydown.enter="_addCourse" />
+          <button @click="_addCourse">addCourse</button>
+        </div>
+      `,
+      methods: {
+        _addCourse() {
+          this.$emit('add-course')
+        },
+        _onInput(e) {
+          this.$emit('input', e.target.value)
+        }
+      }
+    })
+    // 课程列表组件
+    Vue.component('course-list', {
+      props: {
+        courses: {
+          type: Array,
+          default: []
+        }
+      },
+      data() {
+        return {
+          selectedCourse: ''
+        }
+      },
+      template: `
+        <div>
+          <template v-if="courses.length">
+            <div
+              :class="{ active: selectedCourse === course }"
+              v-for="(course, index) in courses"
+              :key="index"
+              @click="selectedCourse = course"
+            >
+              {{ course.name }}
+              ---
+              ¥{{ course.price }}
+            </div>
+          </template>
+          <div v-else>暂无课程</div>
+        </div>
+      `
+    })
+    // app
+    const app = new Vue({
+      el: '#app',
+      data() {
+        return {
+          courses: [],
+          course: '',
+          isShow: false,
+          price: 10
+        }
+      },
+      computed: {
+        total() {
+          return this.courses.length
+        }
+      },
+      async created() {
+        this.courses = await getCourses()
+        this._batchPrice()
+      },
+      methods: {
+        addCourse() {
+          this.courses.push(this.course)
+          this.course = ''
+          this.isShow = true
+        },
+        closeMessageBox($event) {
+          // console.log(arguments)
+          this.isShow = $event
+        },
+        _batchPrice() {
+          this.courses.forEach((course) =>
+            this.$set(course, 'price', this.price)
+          )
+        },
+        _batchAllMessage() {
+          this.$bus.$emit('close-all-message')
+        }
+      }
+    })
+  </script>
+</html>

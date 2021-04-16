@@ -13,17 +13,27 @@
   </head>
   <body>
     <div id="app">
+      <!-- 
+        <comp></comp>
+        此处不能使用 单标签
+        <comp />
+       -->
       <h1>购物车</h1>
       <input v-model="course" type="text" @keydown.enter="addCourse" />
       <button @click="addCourse">addCourse</button>
-      <div
-        :class="{ active: selectedCourse === course }"
-        v-for="(course, index) in courses"
-        :key="index"
-        @click="selectedCourse = course"
-      >
-        {{ course }}
-      </div>
+
+      <template v-if="courses.length">
+        <div
+          :class="{ active: selectedCourse === course }"
+          v-for="(course, index) in courses"
+          :key="index"
+          @click="selectedCourse = course"
+        >
+          {{ course }}
+        </div>
+      </template>
+      <div v-else>暂无课程</div>
+
       <p>
         <!-- 课程总数： {{ courses.length }} -->
         <!-- {{ total }} -->
@@ -33,6 +43,21 @@
   </body>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script>
+    function getCourses() {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(['web全栈', 'web高级'])
+        }, 2000)
+      })
+    }
+    Vue.component('comp', {
+      template: `
+        <div>comp</div>
+      `,
+      mounted() {
+        console.log('comp-mounted')
+      }
+    })
     const app = new Vue({
       el: '#app',
       data() {
@@ -40,12 +65,12 @@
           course: '',
           selectedCourse: '',
           totalCount: '',
-          courses: ['web全栈', 'web高级']
+          courses: []
         }
       },
-      computed: {
+    computed: {
         total() {
-          return this.courses.length 
+          return this.courses.length
         }
       },
       watch: {
@@ -56,6 +81,12 @@
             this.totalCount = newValue.length
           }
         }
+      },
+      async created() {
+        this.courses = await getCourses()
+      },
+      mounted() {
+        console.log('app-mounted')
       },
       methods: {
         addCourse() {
