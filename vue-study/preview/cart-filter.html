@@ -5,7 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>购物车</title>
-    <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
     <style>
       div.active {
         color: aqua;
@@ -21,66 +20,34 @@
         color: #000;
         float: right;
       }
-      .fade-enter-active,
-      .fade-leave-active {
-        opacity: 1;
-        transition: all 0.5s;
-      }
-
-      .fade-enter,
-      .fade-leave-to {
-        opacity: 0;
-      }
-      .bounce-enter-active {
-        animation: bounce-in 0.5s;
-      }
-      .bounce-leave-active {
-        animation: bounce-in 0.5s reverse;
-      }
-      @keyframes bounce-in {
-        0% {
-          transform: scale(0);
-        }
-        50% {
-          transform: scale(1.5);
-        }
-        100% {
-          transform: scale(1);
-        }
-      }
     </style>
   </head>
   <body>
     <div id="app">
-      <!-- 过度 -->
-      <!-- <transition name="fade">
-        <message @close="isShow = false" v-if="isShow">
-          <template v-slot:title> 标题 </template>
-          操作成功
-        </message>
-      </transition> -->
-      <!-- 动画 -->
-      <!-- <transition name="bounce">
-        <message @close="isShow = false" v-if="isShow">
-          <template v-slot:title> 标题 </template>
-          操作成功
-        </message>
-      </transition> -->
-      <!-- 自定义过度类名 -->
-      <transition
-        enter-active-class="animated tada"
-        leave-active-class="animated bounceOutRight"
-      >
-        <message @close="isShow = false" v-if="isShow">
-          <template v-slot:title> 标题 </template>
-          操作成功
-        </message>
-      </transition>
-
+      <!-- <message :show="isShow" @close="closeMessageBox($event)">
+        操作成功
+      </message> -->
+      <message :show.sync="isShow">
+        <template v-slot:title="slotProp">
+          {{ slotProp.title }}
+        </template>
+        操作成功
+      </message>
+      <message :show.sync="isShow">
+        <template v-slot:title="slotProp">
+          {{ slotProp.title }}
+        </template>
+        操作成功
+      </message>
       <h1>购物车</h1>
-
-      <add-course v-model="course" @add-course="addCourse"> </add-course>
+      <div>
+        <input type="text" v-model.number="price" >
+        <button @click="_batchPrice">batchPrice</button>
+      </div>
+      <div><button @click="_batchAllMessage">批量清空弹窗</button></div>
+      <add-course v-model="course" @add-course="addCourse"></add-course>
       <course-list :courses="courses"></course-list>
+      <p>课程总数：{{ total }}</p>
     </div>
   </body>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -88,38 +55,49 @@
     function getCourses() {
       return new Promise((resolve) => {
         setTimeout(() => {
-          resolve([{ name: 'web全栈' }, { name: 'web高级' }])
+          resolve([{name: 'web全栈'}, {name: 'web高级'}])
         }, 2000)
       })
     }
     Vue.prototype.$bus = new Vue()
     // 弹窗组件
     Vue.component('message', {
+      props: {
+        show: {
+          type: Boolean,
+          default: false
+        }
+      },
       template: `
-        <div class="message-box">
-          <slot name="title"></slot>
+        <div class="message-box" v-if="show">
+          <slot name="title" title="内部的标题"></slot>
           <slot></slot>
-          <span class="close" @click="$emit('close')">X</span>
+          <span class="close" @click="$emit('update:show', false)">X</span>
         </div>
-      `
+      `,
+      mounted() {
+        this.$bus.$on('close-all-message', () => {
+          this.$emit('update:show', false)
+        })
+      }
     })
     // 添加课程组件
     Vue.component('add-course', {
-      data() {
-        return {
-          course: ''
+      props: {
+        value: {
+          type: String,
+          default: ''
         }
       },
       template: `
         <div>
-          <input v-model="course" type="text" @keydown.enter="_addCourse" />
+          <input :value="value" @input="_onInput" type="text" @keydown.enter="_addCourse" />
           <button @click="_addCourse">addCourse</button>
         </div>
       `,
       methods: {
         _addCourse() {
-          this.$emit('add-course', this.course)
-          this.course = ''
+          this.$emit('add-course')
         },
         _onInput(e) {
           this.$emit('input', e.target.value)
@@ -149,11 +127,18 @@
               @click="selectedCourse = course"
             >
               {{ course.name }}
+              ---
+              {{ course.price | currency('$') }}
             </div>
           </template>
           <div v-else>暂无课程</div>
         </div>
-      `
+      `,
+      filters: {
+        currency(value, symbal = '¥') {
+          return symbal + value
+        }
+      }
     })
     // app
     const app = new Vue({
@@ -173,15 +158,23 @@
       },
       async created() {
         this.courses = await getCourses()
+        this._batchPrice()
       },
       methods: {
-        addCourse(course) {
-          this.courses.push({ name: course })
+        addCourse() {
+          this.courses.push(this.course)
+          this.course = ''
           this.isShow = true
         },
         closeMessageBox($event) {
           // console.log(arguments)
           this.isShow = $event
+        },
+        _batchPrice() {
+          this.courses.forEach(course => this.$set(course, 'price', this.price))
+        },
+        _batchAllMessage() {
+          this.$bus.$emit('close-all-message')
         }
       }
     })

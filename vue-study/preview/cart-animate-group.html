@@ -67,7 +67,7 @@
         </message>
       </transition> -->
       <!-- 自定义过度类名 -->
-      <transition
+      <!-- <transition
         enter-active-class="animated tada"
         leave-active-class="animated bounceOutRight"
       >
@@ -75,7 +75,7 @@
           <template v-slot:title> 标题 </template>
           操作成功
         </message>
-      </transition>
+      </transition> -->
 
       <h1>购物车</h1>
 
@@ -142,14 +142,16 @@
       template: `
         <div>
           <template v-if="courses.length">
-            <div
-              :class="{ active: selectedCourse === course }"
-              v-for="(course, index) in courses"
-              :key="index"
-              @click="selectedCourse = course"
-            >
-              {{ course.name }}
-            </div>
+            <transition-group name="fade">
+              <div
+                :class="{ active: selectedCourse === course }"
+                v-for="(course, index) in courses"
+                :key="index"
+                @click="selectedCourse = course"
+              >
+                {{ course.name }}
+              </div>
+            </transition-group>
           </template>
           <div v-else>暂无课程</div>
         </div>

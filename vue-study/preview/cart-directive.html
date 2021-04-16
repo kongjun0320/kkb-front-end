@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>购物车</title>
+    <style>
+      div.active {
+        color: aqua;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- 
+        <comp></comp>
+        此处不能使用 单标签
+        <comp />
+       -->
+      <h1>购物车</h1>
+      <p><button v-permission="'user'">权限按钮</button></p>
+      <input v-focus v-model="course" type="text" @keydown.enter="addCourse" />
+      <button @click="addCourse">addCourse</button>
+
+      <template v-if="courses.length">
+        <div
+          :class="{ active: selectedCourse === course }"
+          v-for="(course, index) in courses"
+          :key="index"
+          @click="selectedCourse = course"
+        >
+          {{ course }}
+        </div>
+      </template>
+      <div v-else>暂无课程</div>
+
+      <p>
+        <!-- 课程总数： {{ courses.length }} -->
+        <!-- {{ total }} -->
+        {{ totalCount }}
+      </p>
+    </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    const role = 'admin'
+    function getCourses() {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(['web全栈', 'web高级'])
+        }, 2000)
+      })
+    }
+    Vue.component('comp', {
+      template: `
+        <div>comp</div>
+      `,
+      mounted() {
+        console.log('comp-mounted')
+      }
+    })
+    Vue.directive('focus', {
+      inserted(el) {
+        el.focus()
+      }
+    })
+    Vue.directive('permission', {
+      inserted(el, binding) {
+        if(binding.value !== role) {
+          el.parentElement.removeChild(el)
+        }
+      }
+    })
+    const app = new Vue({
+      el: '#app',
+      data() {
+        return {
+          course: '',
+          selectedCourse: '',
+          totalCount: '',
+          courses: []
+        }
+      },
+      computed: {
+        total() {
+          return this.courses.length
+        }
+      },
+      watch: {
+        courses: {
+          immediate: true,
+          deep: true,
+          handler(newValue, oldValue) {
+            this.totalCount = newValue.length
+          }
+        }
+      },
+      async created() {
+        this.courses = await getCourses()
+      },
+      mounted() {
+        console.log('app-mounted')
+      },
+      methods: {
+        addCourse() {
+          this.courses.push(this.course)
+          this.course = ''
+        }
+      }
+    })
+  </script>
+</html>

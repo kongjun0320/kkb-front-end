@@ -5,11 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>购物车</title>
-    <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
+    <link
+      href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1"
+      rel="stylesheet"
+      type="text/css"
+    />
     <style>
-      div.active {
-        color: aqua;
-      }
       .message-box {
         height: 40px;
         line-height: 40px;
@@ -21,55 +22,26 @@
         color: #000;
         float: right;
       }
+
       .fade-enter-active,
       .fade-leave-active {
-        opacity: 1;
         transition: all 0.5s;
       }
 
-      .fade-enter,
+      /* .fade-enter,
       .fade-leave-to {
         opacity: 0;
-      }
-      .bounce-enter-active {
-        animation: bounce-in 0.5s;
-      }
-      .bounce-leave-active {
-        animation: bounce-in 0.5s reverse;
-      }
-      @keyframes bounce-in {
-        0% {
-          transform: scale(0);
-        }
-        50% {
-          transform: scale(1.5);
-        }
-        100% {
-          transform: scale(1);
-        }
-      }
+      } */
     </style>
   </head>
   <body>
     <div id="app">
-      <!-- 过度 -->
-      <!-- <transition name="fade">
-        <message @close="isShow = false" v-if="isShow">
-          <template v-slot:title> 标题 </template>
-          操作成功
-        </message>
-      </transition> -->
-      <!-- 动画 -->
-      <!-- <transition name="bounce">
-        <message @close="isShow = false" v-if="isShow">
-          <template v-slot:title> 标题 </template>
-          操作成功
-        </message>
-      </transition> -->
-      <!-- 自定义过度类名 -->
+      <!-- 使用Velocity不需要 name="fade" -->
       <transition
-        enter-active-class="animated tada"
-        leave-active-class="animated bounceOutRight"
+        @before-enter="beforeEnter"
+        @enter="enter"
+        @before-leave="beforeLeave"
+        @leave="leave"
       >
         <message @close="isShow = false" v-if="isShow">
           <template v-slot:title> 标题 </template>
@@ -84,6 +56,7 @@
     </div>
   </body>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
   <script>
     function getCourses() {
       return new Promise((resolve) => {
@@ -175,6 +148,27 @@
         this.courses = await getCourses()
       },
       methods: {
+        beforeEnter(el, done) {
+          el.style.opacity = 0
+        },
+        enter(el, done) {
+          // 引起浏览器的回流
+          // document.body.offsetHeight
+          // el.style.opacity = 1
+          // el.addEventListener('transitionend', done)
+          // Velocity
+          Velocity(el, { opacity: 1 }, { duration: 300, complete: done })
+        },
+        beforeLeave(el, done) {
+          el.style.opacity = 1
+        },
+        leave(el, done) {
+          // 引起浏览器的回流
+          // document.body.offsetHeight
+          // el.style.opacity = 0
+          // el.addEventListener('transitionend', done)
+          Velocity(el, { opacity: 0 }, { duration: 300,   complete: done })
+        },
         addCourse(course) {
           this.courses.push({ name: course })
           this.isShow = true
