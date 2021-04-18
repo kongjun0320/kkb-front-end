@@ -32,10 +32,13 @@ export default {
 }
 </script>
 
-<style scoped>
-div.active {
-  color: aqua;
+<style lang="scss">
+div {
+  &.active {
+    color: aqua;
+  }
 }
+
 .item {
   line-height: 1.5;
 }

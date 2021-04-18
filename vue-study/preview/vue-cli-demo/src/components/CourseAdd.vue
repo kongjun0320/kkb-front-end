@@ -1,7 +1,8 @@
 <template>
   <div class="course-add">
     <input v-model="course" type="text" @keydown.enter="_addCourse" />
-    <button @click="_addCourse">addCourse</button>
+    <!-- <button class="btn" @click="_addCourse">addCourse</button> -->
+    <button :class="[$style.btn]" @click="_addCourse">addCourse</button>
   </div>
 </template>
 
@@ -13,6 +14,10 @@ export default {
       course: ''
     }
   },
+  created() {
+    // {btn: "CourseAdd_btn_2te4W"}
+    // console.log(this.$style)
+  },
   methods: {
     _addCourse() {
       this.$emit('add-course',this.course)
@@ -22,4 +27,8 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style module>
+  .btn {
+    color: red;
+  }
+</style>

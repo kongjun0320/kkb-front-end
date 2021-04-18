@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <h1>购物车</h1>
+    <img width="100" src="./assets/universe.jpg" alt="" />
+    <!-- / 代表当前静态服务器的目录 -->
+    <img width="100" src="/assets/universe.jpg" alt="" />
+    <h1 class="title">购物车</h1>
     <course-add @add-course="_addCourse" />
     <course-list :courses="courses" />
   </div>
@@ -30,4 +33,13 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+// @import './styles/variables.scss';
+// .title {
+//   // color: $color-primary;
+//   // color: red;
+// }
+// #app::v-deep .btn {
+//   color: red;
+// }
+</style>
