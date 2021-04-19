@@ -22,6 +22,8 @@
 import KInput from './KInput.vue'
 import KFormItem from './KFormItem'
 import KForm from './KForm'
+import Notice from '../notice'
+import { create } from '../../utils'
 export default {
   components: { KInput, KFormItem, KForm },
   name: 'Form',
@@ -53,7 +55,10 @@ export default {
         if (isValid) {
           alert('登录')
         } else {
-          alert('用户名/密码错误')
+          create(Notice, {
+            title: 'hello'
+          }).show()
+          // alert('用户名/密码错误')
         }
       })
     }
