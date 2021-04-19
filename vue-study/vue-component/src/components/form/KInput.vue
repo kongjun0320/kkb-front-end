@@ -21,6 +21,8 @@ export default {
   methods: {
     onInput(e) {
       this.$emit('input', e.target.value)
+      // 分发校验 this.$parent不严谨
+      this.$parent.$emit('validate')
     }
   }
 }
