@@ -2,7 +2,9 @@
   <div class="form">
     <k-form :model="model" :rules="rules" ref="loginForm">
       <k-form-item label="用户名" prop="username">
-        <k-input placeholder="请输入用户名" v-model="model.username" />
+        <demo-comp>
+          <k-input placeholder="请输入用户名" v-model="model.username" />
+        </demo-comp>
       </k-form-item>
       <k-form-item label="密码" prop="password">
         <k-input
@@ -22,10 +24,11 @@
 import KInput from './KInput.vue'
 import KFormItem from './KFormItem'
 import KForm from './KForm'
+import DemoComp from '../DemoComp'
 import Notice from '../notice'
 import { create } from '../../utils'
 export default {
-  components: { KInput, KFormItem, KForm },
+  components: { DemoComp, KInput, KFormItem, KForm },
   name: 'Form',
   data() {
     return {

@@ -19,10 +19,27 @@ export default {
     }
   },
   methods: {
+    dispatch(componentName, eventName) {
+      let parent = this.$parent || this.$root
+      let name = parent.$options.name
+
+      while (parent && name !== componentName) {
+        parent = parent.$parent
+
+        if (parent) {
+          name = parent.$options.name
+        }
+      }
+      if (parent) {
+        parent.$emit(eventName)
+      }
+    },
     onInput(e) {
       this.$emit('input', e.target.value)
       // 分发校验 this.$parent不严谨
-      this.$parent.$emit('validate')
+      // console.log(this.$parent.$options.name)
+      // this.$parent.$emit('validate')
+      this.dispatch('KFormItem', 'validate')
     }
   }
 }

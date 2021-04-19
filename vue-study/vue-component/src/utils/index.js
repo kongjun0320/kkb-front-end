@@ -31,3 +31,14 @@ export const create = (Component, props) => {
   }
   return comp
 }
+
+export const dispatch = (componentName, eventName) => {
+  let parent = this.$parent || this.$root
+  const name = parent.$options.name
+  while (name !== componentName) {
+    parent = parent.$parent
+  }
+  if (parent) {
+    parent.$emit.apply(parent, eventName)
+  }
+}
