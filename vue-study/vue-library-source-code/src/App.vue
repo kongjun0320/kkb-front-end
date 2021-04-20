@@ -1,10 +1,16 @@
 <template>
   <div id="app">
+    <button @click="$store.commit('add')">
+      counter:{{ $store.state.counter }}
+    </button>
+    <button @click="$store.dispatch('add')">
+      async counter:{{ $store.state.counter }}
+    </button>
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
     </div>
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
