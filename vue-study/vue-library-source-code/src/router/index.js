@@ -15,7 +15,19 @@ const routes = [
   {
     path: '/about',
     name: 'About',
-    component: About
+    component: About,
+    children: [
+      {
+        name: 'Child',
+        path: 'child',
+        component: {
+          name: 'Child',
+          render(h) {
+            return h('div', 'child page')
+          }
+        }
+      }
+    ]
   }
 ]
 
