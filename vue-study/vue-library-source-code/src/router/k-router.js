@@ -31,7 +31,7 @@ class KRouter {
         this.matched.push(route)
         return
       }
-      if (route.parent !== '/' && this.current.indexOf(route.path) !== -1) {
+      if (route.path !== '/' && this.current.indexOf(route.path) !== -1) {
         this.matched.push(route)
         if (route.children) {
           this.match(route.children)
@@ -54,6 +54,7 @@ KRouter.install = function(Vue) {
   })
   // 创建两个组件
   Vue.component('router-link', {
+    name: 'RouterLink',
     props: {
       to: {
         type: String,
@@ -73,6 +74,7 @@ KRouter.install = function(Vue) {
     }
   })
   Vue.component('router-view', {
+    name: 'RouterView',
     render(h) {
       // const routes = this.$router.$options.routes
       // const route = routes.find((r) => r.path === this.$router.current)
