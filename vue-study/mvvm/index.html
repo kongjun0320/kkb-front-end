@@ -9,7 +9,7 @@
   <body>
     <div id="app">
       <input v-model="school.name" type="text" />
-      <div>{{ school.name }}</div>
+      <div>{{ school.name }}-{{ age }}</div>
       <div>{{ age }}</div>
       <ul>
         <li>VueJS</li>
@@ -22,13 +22,11 @@
   <script>
     const vm = new KVue({
       el: '#app',
-      data() {
-        return {
-          school: {
-            name: '珠峰'
-          },
-          age: 10
-        }
+      data: {
+        school: {
+          name: '珠峰'
+        },
+        age: 10
       }
     })
   </script>
