@@ -2,16 +2,34 @@ let _Vue
 
 class Store {
   constructor(options) {
+    this._mutations = options.mutations
+    this._actions = options.actions
+
+    this._wrappedGetters = options.getters
+
+    const computed = {}
+    this.getters = {}
+
+    const store = this
+
+    Object.keys(this._wrappedGetters).forEach((key) => {
+      const fn = this._wrappedGetters[key]
+      computed[key] = function() {
+        return fn(store.state)
+      }
+      Object.defineProperty(store.getters, key, {
+        get: () => store._vm[key]
+      })
+    })
+
     this._vm = new _Vue({
       data: {
         // $$state不会代理到Vue实例上
         $$state: options.state
-      }
+      },
+      computed
     })
-    this._mutations = options.mutations
-    this._actions = options.actions
 
-    const store = this
     // 为什么可以解构出action
     const { commit, action } = store
 
