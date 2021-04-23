@@ -8,6 +8,7 @@
 export default {
   name: 'Child1',
   mounted() {
+    console.log('child1')
     this.$bus.on('event-from-child2', (msg) => {
       console.log('msg from child2: ', msg)
     })

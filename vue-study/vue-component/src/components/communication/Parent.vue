@@ -8,7 +8,10 @@
 import Child2 from './Child2.vue'
 export default {
   components: { Child2 },
-  name: 'Parent'
+  name: 'Parent',
+  mounted() {
+    console.log('parent')
+  }
 }
 </script>
 

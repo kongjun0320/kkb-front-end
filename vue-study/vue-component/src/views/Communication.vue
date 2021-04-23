@@ -1,8 +1,9 @@
 <template>
   <div>
-    <child1 ref="child1" />
+    <child2 />
+    <!-- <child1 ref="child1" /> -->
     <!-- <child2 v-for="v in 2" :key="v" ref="child2" /> -->
-    <parent @foo="handleFoo" :msg="'msg from grandpa'" />
+    <!-- <parent @foo="handleFoo" :msg="'msg from grandpa'" /> -->
   </div>
 </template>
 
@@ -21,6 +22,7 @@ export default {
     bar: 'bar'
   },
   mounted() {
+    console.log('communication')
     // console.log(
     //   '$children ===== ',
     //   this.$children,

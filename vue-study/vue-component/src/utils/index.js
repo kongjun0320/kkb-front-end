@@ -17,19 +17,30 @@ export const Bus = class Bus {
  * props: 组件的参数
  */
 export const create = (Component, props) => {
-  const vm = new Vue({
-    render(h) {
-      return h(Component, { props })
-    }
-  }).$mount()
-  document.body.appendChild(vm.$el)
-
-  const comp = vm.$children[0]
+  // 1.Vue.extend 如何实现
+  const Ctrl = Vue.extend(Component)
+  const comp = new Ctrl({ propsData: props })
+  comp.$mount()
+  document.body.appendChild(comp.$el)
   comp.remove = () => {
-    document.body.removeChild(vm.$el)
-    vm.$destroy()
+    document.body.removeChild(comp.$el)
+    comp.$destroy()
   }
   return comp
+  // 2.render
+  // const vm = new Vue({
+  //   render(h) {
+  //     return h(Component, { props })
+  //   }
+  // }).$mount()
+  // document.body.appendChild(vm.$el)
+
+  // const comp = vm.$children[0]
+  // comp.remove = () => {
+  //   document.body.removeChild(vm.$el)
+  //   vm.$destroy()
+  // }
+  // return comp
 }
 
 export const dispatch = (componentName, eventName) => {

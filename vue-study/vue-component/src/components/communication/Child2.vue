@@ -22,6 +22,7 @@ export default {
     }
   },
   mounted() {
+    console.log('child2')
     this.$parent.$on('child', (msg) => {
       console.log(msg)
     })

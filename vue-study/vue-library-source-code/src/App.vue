@@ -1,8 +1,10 @@
 <template>
   <div id="app">
+    <p>computed: {{ name }}</p>
     <button @click="$store.commit('add')">
       counter:{{ $store.state.counter }}
     </button>
+    <button>doubleCounter:{{ $store.getters.doubleCounter }}</button>
     <button @click="$store.dispatch('add')">
       async counter:{{ $store.state.counter }}
     </button>
@@ -13,6 +15,23 @@
     <router-view />
   </div>
 </template>
+
+<script>
+export default {
+  name: 'App',
+  data() {
+    return {
+      firstName: 'ai',
+      lastName: 'cherish'
+    }
+  },
+  computed: {
+    name() {
+      return this.firstName + ' ' + this.lastName
+    }
+  }
+}
+</script>
 
 <style lang="scss">
 #app {

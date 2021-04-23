@@ -8,14 +8,37 @@ class KRouter {
       this.routeMap[route.path] = route
     })
 
-    const init = window.location.hash.slice(1)
-    _Vue.util.defineReactive(this, 'current', init)
+    // const init = window.location.hash.slice(1)
+    // _Vue.util.defineReactive(this, 'current', init)
+
+    // 嵌套路由处理
+    this.current = window.location.hash.slice(1) || '/'
+    _Vue.util.defineReactive(this, 'matched', [])
+    this.match()
 
     window.addEventListener('hashchange', this.handleHashChange.bind(this))
     window.addEventListener('load', this.handleHashChange.bind(this))
   }
   handleHashChange() {
     this.current = window.location.hash.slice(1)
+    this.matched = []
+    this.match()
+  }
+  match(routes) {
+    routes = routes || this.$options.routes
+    for (const route of routes) {
+      if (route.path === '/' && this.current === '/') {
+        this.matched.push(route)
+        return
+      }
+      if (route.path !== '/' && this.current.indexOf(route.path) !== -1) {
+        this.matched.push(route)
+        if (route.children) {
+          this.match(route.children)
+        }
+        return
+      }
+    }
   }
 }
 
@@ -31,6 +54,7 @@ KRouter.install = function(Vue) {
   })
   // 创建两个组件
   Vue.component('router-link', {
+    name: 'RouterLink',
     props: {
       to: {
         type: String,
@@ -50,16 +74,37 @@ KRouter.install = function(Vue) {
     }
   })
   Vue.component('router-view', {
+    name: 'RouterView',
     render(h) {
       // const routes = this.$router.$options.routes
       // const route = routes.find((r) => r.path === this.$router.current)
       // const comp = routes ? route.component : null
 
-      const { routeMap, current } = this.$router
-      const currentRoute = routeMap[current]
-      const comp = currentRoute ? currentRoute.component : null
+      // router-view的深度标记
+      this.$vnode.data.routerView = true
+      let depth = 0
+      let parent = this.$parent
+      while (parent) {
+        const vnodeData = parent.$vnode && parent.$vnode.data
+        if (vnodeData) {
+          if (vnodeData.routerView) {
+            depth++
+          }
+        }
+        parent = parent.$parent
+      }
 
-      return h(comp)
+      // const { routeMap, current } = this.$router
+      // const currentRoute = routeMap[current]
+      // const comp = currentRoute ? currentRoute.component : null
+      // 嵌套路由处理
+      let component = null
+      const route = this.$router.matched[depth]
+      if (route) {
+        component = route.component
+      }
+
+      return h(component)
     }
   })
 }
