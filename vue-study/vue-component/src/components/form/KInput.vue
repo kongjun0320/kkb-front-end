@@ -21,6 +21,7 @@ export default {
   methods: {
     dispatch(componentName, eventName) {
       let parent = this.$parent || this.$root
+      // element-ui的源码是使用componentName自定义的属性表示组件名
       let name = parent.$options.name
 
       while (parent && name !== componentName) {
